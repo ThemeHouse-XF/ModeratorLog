@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<addon addon_id="ThemeHouse_ModeratorLog" title="[⌂] Moderator Log" version_string="1.0.1" version_id="1447261019" url="http://xf.themehouse.io/" install_callback_class="ThemeHouse_Install" install_callback_method="install" uninstall_callback_class="ThemeHouse_Install" uninstall_callback_method="uninstall">
+  <admin_navigation/>
+  <admin_permissions/>
+  <admin_style_properties/>
+  <admin_templates/>
+  <admin_template_modifications>
+    <modification template="log_moderator" modification_key="th_logModerator_moderatorLog" description="" execution_order="10" enabled="1" action="preg_replace">
+      <find><![CDATA[#<span class="secondRow">\s*{xen:raw \$entry\.content_title, object},#Us]]></find>
+      <replace><![CDATA[${0}{xen:if {$xenOptions.th_moderatorLog_showAffectedUsername}, ' {xen:raw $entry.content_username, object},'}]]></replace>
+    </modification>
+  </admin_template_modifications>
+  <code_events/>
+  <code_event_listeners>
+    <listener event_id="controller_pre_dispatch" execute_order="10" callback_class="ThemeHouse_Listener_ControllerPreDispatch" callback_method="controllerPreDispatch" active="1" hint="" description=""/>
+    <listener event_id="file_health_check" execute_order="10" callback_class="ThemeHouse_ModeratorLog_Listener_FileHealthCheck" callback_method="fileHealthCheck" active="1" hint="" description=""/>
+    <listener event_id="init_dependencies" execute_order="10" callback_class="ThemeHouse_Listener_InitDependencies" callback_method="initDependencies" active="1" hint="" description=""/>
+    <listener event_id="load_class" execute_order="10" callback_class="ThemeHouse_ModeratorLog_Listener_LoadClass" callback_method="loadClassModel" active="0" hint="XenForo_Model_Log" description="XenForo_Model_Log (For XenForo 1.2 and above)" compatibility_switch="1"/>
+    <listener event_id="load_class_model" execute_order="10" callback_class="ThemeHouse_ModeratorLog_Listener_LoadClass" callback_method="loadClassModel" active="1" hint="" description="(For XenForo 1.1 and below)" compatibility_switch="1"/>
+  </code_event_listeners>
+  <cron/>
+  <email_templates/>
+  <email_template_modifications/>
+  <optiongroups>
+    <group group_id="th_moderatorLog" display_order="2000" debug_only="0"/>
+    <option option_id="th_moderatorLog_showAffectedUsername" edit_format="onoff" data_type="boolean" can_backup="1">
+      <default_value>1</default_value>
+      <edit_format_params/>
+      <sub_options/>
+      <relation group_id="th_moderatorLog" display_order="1"/>
+    </option>
+    <option option_id="th_moderatorLog_splitMoveCopyPosts" edit_format="onoff" data_type="boolean" can_backup="1">
+      <default_value>1</default_value>
+      <edit_format_params/>
+      <sub_options/>
+      <relation group_id="th_moderatorLog" display_order="100"/>
+    </option>
+  </optiongroups>
+  <permissions>
+    <permission_groups/>
+    <permissions/>
+    <interface_groups/>
+  </permissions>
+  <phrases>
+    <phrase title="moderator_log_post_copy_target" version_id="1418202958" version_string="1.0.0"><![CDATA[Thread created by copying post ({id})]]></phrase>
+    <phrase title="moderator_log_post_copy_target_existing" version_id="1418202958" version_string="1.0.0"><![CDATA[Post ({id}) copied to thread]]></phrase>
+    <phrase title="moderator_log_post_move_target" version_id="1418202958" version_string="1.0.0"><![CDATA[Thread created by moving post ({id})]]></phrase>
+    <phrase title="moderator_log_post_move_target_existing" version_id="1418202958" version_string="1.0.0"><![CDATA[Post ({id}) moved to thread]]></phrase>
+    <phrase title="option_group_th_moderatorLog" version_id="1418202958" version_string="1.0.0"><![CDATA[Moderator Log by ThemeHouse]]></phrase>
+    <phrase title="option_group_th_moderatorLog_description" version_id="1418202958" version_string="1.0.0"><![CDATA[Options for the Moderator Log by ThemeHouse add-on.]]></phrase>
+    <phrase title="option_th_moderatorLog_showAffectedUsername" version_id="1418202958" version_string="1.0.0"><![CDATA[Show affected username in moderator log]]></phrase>
+    <phrase title="option_th_moderatorLog_showAffectedUsername_explain" version_id="1418202958" version_string="1.0.0"><![CDATA[]]></phrase>
+    <phrase title="option_th_moderatorLog_splitMoveCopyPosts" version_id="1418202958" version_string="1.0.0"><![CDATA[Split move/copy post logs into separate entries for each post]]></phrase>
+    <phrase title="option_th_moderatorLog_splitMoveCopyPosts_explain" version_id="1418202958" version_string="1.0.0"><![CDATA[]]></phrase>
+    <phrase title="th_more_details_moderatorlog" version_id="1418205397" version_string="1.0.0"><![CDATA[More Details]]></phrase>
+  </phrases>
+  <route_prefixes/>
+  <style_properties/>
+  <templates/>
+  <public_template_modifications>
+    <modification template="footer" modification_key="th_copyrightNotice_moderatorLog" description="Copyright notice for [⌂] Moderator Log" execution_order="1" enabled="1" action="callback">
+      <find><![CDATA[/{xen:phrase (?:xenforo|extra)_copyright}/]]></find>
+      <replace><![CDATA[ThemeHouse_Listener_InitDependencies::copyrightNotice]]></replace>
+    </modification>
+    <modification template="thread_moderator_actions" modification_key="th_threadModeratorActions_moderatorLog" description="Adds affected user column." execution_order="10" enabled="1" action="preg_replace">
+      <find><![CDATA[#(<th>{xen:phrase moderator}</th>)(.*<td><xen:username user="\$entry" /></td>)(.*<div class="sectionFooter">.*)(</div>)#Us]]></find>
+      <replace><![CDATA[${1}
+<th class="nonOverlayOnly">{xen:phrase user}</th>
+${2}
+<td class="nonOverlayOnly"><xen:username user="{$entry.content_user}" /></td>
+${3}
+<a href="{xen:link threads/moderator-actions, $thread}" class="button overlayOnly">{xen:phrase th_more_details_moderatorlog}...</a>
+${4}]]></replace>
+    </modification>
+  </public_template_modifications>
+  <bb_code_media_sites/>
+  <bb_codes/>
+</addon>
